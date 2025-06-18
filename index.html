@@ -7,19 +7,34 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <style>
-      /* Style for the Unity container */
+      /* Body and page setup */
+      body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f0f0f0;
+      }
+
+      /* Unity container (canvas) setup */
       #unity-container {
         position: relative;
-        margin-bottom: 20px; /* Space between the Unity canvas and buttons */
+        margin-bottom: 20px; /* Space between Unity canvas and buttons */
+        display: block;
+        width: 960px;
+        height: 600px;
       }
 
       /* Button container positioning (below Unity canvas) */
       #button-container {
-        position: absolute;
-        bottom: -100px;  /* Move buttons down below the Unity canvas */
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 10;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 20px; /* Space between Unity window and buttons */
       }
 
       /* Button styles */
@@ -45,6 +60,11 @@
       @media (max-width: 768px) {
         #button-container button {
           width: 80%;  /* Reduce button width on smaller screens */
+        }
+
+        #unity-container {
+          width: 100%;  /* Make Unity container fill the width of the screen on mobile */
+          height: auto;  /* Allow the Unity container height to adjust proportionally */
         }
       }
     </style>
