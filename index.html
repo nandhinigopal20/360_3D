@@ -6,6 +6,48 @@
     <title>Unity Web Player | WebGL_360_</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
+    <style>
+      /* Style for the Unity container */
+      #unity-container {
+        position: relative;
+        margin-bottom: 20px; /* Space between the Unity canvas and buttons */
+      }
+
+      /* Button container positioning (below Unity canvas) */
+      #button-container {
+        position: absolute;
+        bottom: -100px;  /* Move buttons down below the Unity canvas */
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+      }
+
+      /* Button styles */
+      #button-container button {
+        width: 45%;  /* Make the button width almost half the Unity canvas */
+        height: 50px; /* Increase button height */
+        margin: 10px 0; /* Space between buttons */
+        font-size: 18px; /* Larger font size for better readability */
+        border-radius: 25px;  /* Rounded corners */
+        border: 2px solid #ccc;  /* Border color */
+        background-color: #4CAF50;  /* Green background color */
+        color: white;  /* White text color */
+        cursor: pointer;  /* Pointer cursor on hover */
+        transition: background-color 0.3s ease; /* Smooth color change on hover */
+      }
+
+      /* Button hover effect */
+      #button-container button:hover {
+        background-color: #45a049; /* Darker green on hover */
+      }
+
+      /* Responsive adjustments for mobile */
+      @media (max-width: 768px) {
+        #button-container button {
+          width: 80%;  /* Reduce button width on smaller screens */
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="unity-container" class="unity-desktop">
@@ -24,16 +66,21 @@
       </div>
     </div>
 
-    <!-- Add the buttons to switch between car sequences -->
-    <div id="button-container" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+    <!-- Add the buttons below Unity -->
+    <div id="button-container">
       <button id="redButton" onclick="OnRedButtonClicked()">Red Car</button>
       <button id="blueButton" onclick="OnBlueButtonClicked()">Blue Car</button>
     </div>
 
     <script>
       var canvas = document.querySelector("#unity-canvas");
-      var unityInstance = null;  // Declare unityInstance globally so we can reference it
 
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
       function unityShowBanner(msg, type) {
         var warningBanner = document.querySelector("#unity-warning");
         function updateBannerVisibility() {
@@ -67,14 +114,13 @@
         showBanner: unityShowBanner,
       };
 
-      // Create Unity instance and assign it to unityInstance
+      // Create Unity instance
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-        }).then((instance) => {
-          unityInstance = instance;  // Assign the unityInstance
+        }).then((unityInstance) => {
           document.querySelector("#unity-loading-bar").style.display = "none";
           document.querySelector("#unity-fullscreen-button").onclick = () => {
             unityInstance.SetFullscreen(1);
