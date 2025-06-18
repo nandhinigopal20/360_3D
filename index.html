@@ -7,7 +7,7 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <style>
-      /* Body and page setup */
+      /* Body setup: Center content vertically and horizontally */
       body {
         margin: 0;
         padding: 0;
@@ -22,13 +22,13 @@
       /* Unity container (canvas) setup */
       #unity-container {
         position: relative;
-        margin-bottom: 20px; /* Space between Unity canvas and buttons */
         display: block;
-        width: 960px;
-        height: 600px;
+        width: 960px; /* Keep original width */
+        height: 600px; /* Keep original height */
+        margin-bottom: 20px; /* Space for buttons */
       }
 
-      /* Button container positioning (below Unity canvas) */
+      /* Button container styling (positioning below Unity window) */
       #button-container {
         position: relative;
         display: flex;
@@ -37,39 +37,40 @@
         margin-top: 20px; /* Space between Unity window and buttons */
       }
 
-      /* Button styles */
+      /* Button styling */
       #button-container button {
-        width: 45%;  /* Make the button width almost half the Unity canvas */
-        height: 50px; /* Increase button height */
-        margin: 10px 0; /* Space between buttons */
-        font-size: 18px; /* Larger font size for better readability */
+        width: 45%;  /* Make buttons almost half the width of Unity canvas */
+        height: 50px;
+        font-size: 18px;
+        margin: 10px 0;
         border-radius: 25px;  /* Rounded corners */
-        border: 2px solid #ccc;  /* Border color */
-        background-color: #4CAF50;  /* Green background color */
-        color: white;  /* White text color */
-        cursor: pointer;  /* Pointer cursor on hover */
-        transition: background-color 0.3s ease; /* Smooth color change on hover */
+        border: 2px solid #ccc;
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
       }
 
-      /* Button hover effect */
+      /* Hover effect for buttons */
       #button-container button:hover {
-        background-color: #45a049; /* Darker green on hover */
+        background-color: #45a049;
       }
 
-      /* Responsive adjustments for mobile */
+      /* Mobile responsive design */
       @media (max-width: 768px) {
         #button-container button {
-          width: 80%;  /* Reduce button width on smaller screens */
+          width: 80%; /* Reduce button width on small screens */
         }
 
         #unity-container {
-          width: 100%;  /* Make Unity container fill the width of the screen on mobile */
-          height: auto;  /* Allow the Unity container height to adjust proportionally */
+          width: 100%; /* Unity container fills the screen width on mobile */
+          height: auto; /* Allow Unity canvas to adjust its height */
         }
       }
     </style>
   </head>
   <body>
+    <!-- Unity canvas container -->
     <div id="unity-container" class="unity-desktop">
       <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
       <div id="unity-loading-bar">
@@ -78,7 +79,7 @@
           <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-      <div id="unity-warning"> </div>
+      <div id="unity-warning"></div>
       <div id="unity-footer">
         <div id="unity-logo-title-footer"></div>
         <div id="unity-fullscreen-button"></div>
@@ -86,7 +87,7 @@
       </div>
     </div>
 
-    <!-- Add the buttons below Unity -->
+    <!-- Buttons to switch between car sequences -->
     <div id="button-container">
       <button id="redButton" onclick="OnRedButtonClicked()">Red Car</button>
       <button id="blueButton" onclick="OnBlueButtonClicked()">Blue Car</button>
@@ -97,10 +98,6 @@
 
       // Shows a temporary message banner/ribbon for a few seconds, or
       // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
       function unityShowBanner(msg, type) {
         var warningBanner = document.querySelector("#unity-warning");
         function updateBannerVisibility() {
@@ -152,7 +149,7 @@
 
       document.body.appendChild(script);
 
-      // Add functions to switch between red and blue car image sequences
+      // Functions to handle button clicks
       function OnRedButtonClicked() {
         if (unityInstance) {
           unityInstance.SendMessage('Link', 'ShowRedCar');
