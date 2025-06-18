@@ -6,71 +6,8 @@
     <title>Unity Web Player | WebGL_360_</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-    <style>
-      /* Body setup: Center content vertically and horizontally */
-      body {
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background-color: #f0f0f0;
-      }
-
-      /* Unity container (canvas) setup */
-      #unity-container {
-        position: relative;
-        display: block;
-        width: 960px; /* Keep original width */
-        height: 600px; /* Keep original height */
-        margin-bottom: 20px; /* Space for buttons */
-      }
-
-      /* Button container styling (positioning below Unity window) */
-      #button-container {
-        position: relative;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        margin-top: 20px; /* Space between Unity window and buttons */
-      }
-
-      /* Button styling */
-      #button-container button {
-        width: 45%;  /* Make buttons almost half the width of Unity canvas */
-        height: 50px;
-        font-size: 18px;
-        margin: 10px 0;
-        border-radius: 25px;  /* Rounded corners */
-        border: 2px solid #ccc;
-        background-color: #4CAF50;
-        color: white;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-
-      /* Hover effect for buttons */
-      #button-container button:hover {
-        background-color: #45a049;
-      }
-
-      /* Mobile responsive design */
-      @media (max-width: 768px) {
-        #button-container button {
-          width: 80%; /* Reduce button width on small screens */
-        }
-
-        #unity-container {
-          width: 100%; /* Unity container fills the screen width on mobile */
-          height: auto; /* Allow Unity canvas to adjust its height */
-        }
-      }
-    </style>
   </head>
   <body>
-    <!-- Unity canvas container -->
     <div id="unity-container" class="unity-desktop">
       <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
       <div id="unity-loading-bar">
@@ -79,7 +16,7 @@
           <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-      <div id="unity-warning"></div>
+      <div id="unity-warning"> </div>
       <div id="unity-footer">
         <div id="unity-logo-title-footer"></div>
         <div id="unity-fullscreen-button"></div>
@@ -87,17 +24,16 @@
       </div>
     </div>
 
-    <!-- Buttons to switch between car sequences -->
-    <div id="button-container">
+    <!-- Add the buttons to switch between car sequences -->
+    <div id="button-container" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
       <button id="redButton" onclick="OnRedButtonClicked()">Red Car</button>
       <button id="blueButton" onclick="OnBlueButtonClicked()">Blue Car</button>
     </div>
 
     <script>
       var canvas = document.querySelector("#unity-canvas");
+      var unityInstance = null;  // Declare unityInstance globally so we can reference it
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
       function unityShowBanner(msg, type) {
         var warningBanner = document.querySelector("#unity-warning");
         function updateBannerVisibility() {
@@ -131,13 +67,14 @@
         showBanner: unityShowBanner,
       };
 
-      // Create Unity instance
+      // Create Unity instance and assign it to unityInstance
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
+        }).then((instance) => {
+          unityInstance = instance;  // Assign the unityInstance
           document.querySelector("#unity-loading-bar").style.display = "none";
           document.querySelector("#unity-fullscreen-button").onclick = () => {
             unityInstance.SetFullscreen(1);
@@ -149,7 +86,7 @@
 
       document.body.appendChild(script);
 
-      // Functions to handle button clicks
+      // Add functions to switch between red and blue car image sequences
       function OnRedButtonClicked() {
         if (unityInstance) {
           unityInstance.SendMessage('Link', 'ShowRedCar');
