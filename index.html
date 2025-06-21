@@ -1,105 +1,330 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Unity Web Player | WebGL_360_</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+    <link rel="stylesheet" href="TemplateData/style.css" />
   </head>
+  <img src="./TemplateData/color-image/" alt="" />
+  <style>
+    html {
+      zoom: 100% !important;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 480px;
+      /* height: 100vh; */
+      overflow-y: hidden;
+    }
+    .unity-desktop {
+      display: block;
+      z-index: 7;
+      background-color: #fff;
+      /* width: 500px; */
+      padding-left: 48px;
+      padding-right: 48px;
+      /* padding: 40px 48px; */
+      /* min-width: 100%; */
+    }
+    .side-panel {
+      padding: 40px 48px;
+      background-color: #fff;
+    }
+    canvas {
+      aspect-ratio: unset !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100vw;
+      max-height: 100vh;
+    }
+    .color-wrapper h1 {
+      margin-top: 0px;
+      margin-bottom: 10px;
+    }
+    .color-wrapper #section-wrapper #color-section-wrapper {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      text-align: center;
+      align-items: flex-start;
+      gap: 16px;
+      /* padding-top: 24px; */
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .colorButton {
+      margin: 10px;
+      border: 5px solid transparent;
+      border-radius: 50%;
+      width: 75%;
+      height: 75%;
+      padding: 2px;
+      background-color: #fff;
+      transition: border-color 0.2s ease;
+    }
+
+    .colorButton.selected {
+      border-color: black;
+    }
+
+    .colorButton img {
+      border-radius: 50%;
+      width: 75%;
+      height: 75%;
+    }
+    #selectedColorText {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      height: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        display: grid;
+        grid-template-columns: 1fr;
+        height: 100vh;
+        overflow-y: auto;
+        scrollbar-width: thin;
+      }
+      .unity-desktop {
+        width: 100vw;
+        height: 50vh;
+        padding: 0px;
+      }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      #color-section-wrapper {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-y: auto;
+        overflow-x: auto; /* Enable horizontal scroll */
+        -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+        gap: 12px;
+        padding: 8px 16px;
+        scrollbar-width: thin;
+      }
+
+      #color-section-wrapper::-webkit-scrollbar {
+        display: none;
+      }
+
+      .colorButton {
+        flex: 0 0 auto;
+        width: 56px;
+        height: 56px;
+        align-self: center;
+      }
+    }
+  </style>
   <body>
     <div class="container">
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
+      <div id="unity-container" class="unity-desktop">
+        <canvas
+          id="unity-canvas"
+          width="960"
+          height="600"
+          tabindex="-1"
+        ></canvas>
+        <div id="unity-loading-bar">
+          <div id="unity-logo"></div>
+          <div id="unity-progress-bar-empty">
+            <div id="unity-progress-bar-full"></div>
+          </div>
+        </div>
+        <div id="unity-warning"></div>
+        <div id="unity-footer">
+          <div id="unity-logo-title-footer"></div>
+          <div id="unity-fullscreen-button"></div>
+          <div id="unity-build-title">WebGL_360_</div>
         </div>
       </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-logo-title-footer"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">WebGL_360_</div>
+      <div class="side-panel">
+        <div class="color-wrapper">
+          <h1>colours</h1>
+          <div id="section-wrapper">
+            <p id="selectedColorText"></p>
+            <div id="color-section-wrapper"></div>
+          </div>
+        </div>
+        <!-- Add the buttons to switch between car sequences -->
+        <!-- <div id="button-container"> -->
+        <!-- <div
+          id="button-container"
+          style="position: absolute; top: 20px; left: 20px; z-index: 10"
+        > -->
+        <!-- <button id="redButton" onclick="OnRedButtonClicked()">Red Car</button>
+          <button id="blueButton" onclick="OnBlueButtonClicked()">
+            Blue Car
+          </button>
+        </div> -->
       </div>
-    </div>
+      <script>
+        var canvas = document.querySelector("#unity-canvas");
+        var unityInstance = null; // Declare unityInstance globally so we can reference it
 
-    <!-- Add the buttons to switch between car sequences -->
-    <div id="button-container" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
-      <button id="redButton" onclick="OnRedButtonClicked()">Red Car</button>
-      <button id="blueButton" onclick="OnBlueButtonClicked()">Blue Car</button>
-    </div>
-
-    <script>
-      var canvas = document.querySelector("#unity-canvas");
-      var unityInstance = null;  // Declare unityInstance globally so we can reference it
-
-      function unityShowBanner(msg, type) {
-        var warningBanner = document.querySelector("#unity-warning");
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        function unityShowBanner(msg, type) {
+          var warningBanner = document.querySelector("#unity-warning");
+          function updateBannerVisibility() {
+            warningBanner.style.display = warningBanner.children.length
+              ? "block"
+              : "none";
+          }
+          var div = document.createElement("div");
+          div.innerHTML = msg;
+          warningBanner.appendChild(div);
+          if (type == "error") div.style = "background: red; padding: 10px;";
+          else {
+            if (type == "warning")
+              div.style = "background: yellow; padding: 10px;";
+            setTimeout(function () {
+              warningBanner.removeChild(div);
+              updateBannerVisibility();
+            }, 5000);
+          }
+          updateBannerVisibility();
         }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
+
+        var buildUrl = "Build";
+        var loaderUrl = buildUrl + "/Image_Config.loader.js";
+        var config = {
+          arguments: [],
+          dataUrl: buildUrl + "/Image_Config.data",
+          frameworkUrl: buildUrl + "/Image_Config.framework.js",
+          codeUrl: buildUrl + "/Image_Config.wasm",
+          streamingAssetsUrl: "StreamingAssets",
+          companyName: "DefaultCompany",
+          productName: "WebGL_360_",
+          productVersion: "0.1.0",
+          showBanner: unityShowBanner,
+        };
+
+        // Create Unity instance and assign it to unityInstance
+        var script = document.createElement("script");
+        script.src = loaderUrl;
+        script.onload = () => {
+          createUnityInstance(canvas, config, (progress) => {
+            document.querySelector("#unity-progress-bar-full").style.width =
+              100 * progress + "%";
+          })
+            .then((instance) => {
+              unityInstance = instance; // Assign the unityInstance
+              document.querySelector("#unity-loading-bar").style.display =
+                "none";
+              document.querySelector("#unity-fullscreen-button").onclick =
+                () => {
+                  unityInstance.SetFullscreen(1);
+                };
+            })
+            .catch((message) => {
+              alert(message);
+            });
+        };
+
+        document.body.appendChild(script);
+
+        // Add functions to switch between red and blue car image sequences
+        function OnRedButtonClicked() {
+          if (unityInstance) {
+            unityInstance.SendMessage("Link", "ShowRedCar");
+          }
         }
-        updateBannerVisibility();
-      }
 
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/Image_Config.loader.js";
-      var config = {
-        arguments: [],
-        dataUrl: buildUrl + "/Image_Config.data",
-        frameworkUrl: buildUrl + "/Image_Config.framework.js",
-        codeUrl: buildUrl + "/Image_Config.wasm",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "WebGL_360_",
-        productVersion: "0.1.0",
-        showBanner: unityShowBanner,
-      };
+        function OnBlueButtonClicked() {
+          if (unityInstance) {
+            unityInstance.SendMessage("Link", "ShowBlueCar");
+          }
+        }
 
-      // Create Unity instance and assign it to unityInstance
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-        }).then((instance) => {
-          unityInstance = instance;  // Assign the unityInstance
-          document.querySelector("#unity-loading-bar").style.display = "none";
-          document.querySelector("#unity-fullscreen-button").onclick = () => {
-            unityInstance.SetFullscreen(1);
-          };
-        }).catch((message) => {
-          alert(message);
+        const colors = [
+          {
+            name: "iron blue",
+            image: "./TemplateData/color-image/iron-blue.png",
+            unityFunction: "ShowBlueCar",
+          },
+          {
+            name: "flame red",
+            image: "./TemplateData/color-image/flame-red.png",
+            unityFunction: "ShowRedCar",
+          },
+
+          {
+            name: "arctic white",
+            image: "./TemplateData/color-image/arctic-white.png",
+          },
+          {
+            name: "ceramic grey",
+            image: "./TemplateData/color-image/ceramic-grey.png",
+          },
+          {
+            name: "daimond black",
+            image: "./TemplateData/color-image/daimond-black.png",
+          },
+
+          {
+            name: "oyster grey",
+            image: "./TemplateData/color-image/oyster-grey.png",
+          },
+        ];
+
+        const container = document.getElementById("color-section-wrapper");
+        const savedColor = localStorage.getItem("selectedColor") || "iron blue";
+
+        colors.forEach((color, index) => {
+          const item = document.createElement("div");
+          item.className = "color-item";
+          item.innerHTML = `
+          <div class="color-item">
+            <button class="colorButton"  id="color-${index}" onclick="OnColorButtonClicked('${color.unityFunction}', '${color.name}','${index}')">
+              <img src="${color.image}" alt="${color.name}" />
+            </button>
+            </div>
+    
+      `;
+          container.appendChild(item);
         });
-      };
+        window.onload = function () {
+          const defaultColor = colors.find((c) => c.name === savedColor);
+          const index = colors.findIndex((c) => c.name === savedColor);
+          if (defaultColor) {
+            OnColorButtonClicked(
+              defaultColor.unityFunction || "",
+              defaultColor.name,
+              index
+            );
+          }
+        };
+        function OnColorButtonClicked(
+          unityFunctionName,
+          colorName,
+          selectedIndex
+        ) {
+          if (typeof unityInstance !== "undefined" && unityInstance) {
+            unityInstance.SendMessage("Link", unityFunctionName);
+          }
+          const displayText = document.getElementById("selectedColorText");
+          if (displayText) {
+            displayText.textContent = `${colorName}`;
+          }
+          document.querySelectorAll(".colorButton").forEach((btn) => {
+            btn.classList.remove("selected");
+          });
 
-      document.body.appendChild(script);
-
-      // Add functions to switch between red and blue car image sequences
-      function OnRedButtonClicked() {
-        if (unityInstance) {
-          unityInstance.SendMessage('Link', 'ShowRedCar');
+          const selectedButton = document.getElementById(
+            `color-${selectedIndex}`
+          );
+          if (selectedButton) {
+            selectedButton.classList.add("selected");
+          }
+          localStorage.setItem("selectedColor", colorName);
         }
-      }
-
-      function OnBlueButtonClicked() {
-        if (unityInstance) {
-          unityInstance.SendMessage('Link', 'ShowBlueCar');
-        }
-      }
-    </script>
+      </script>
     </div>
   </body>
 </html>
